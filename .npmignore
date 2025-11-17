@@ -1,0 +1,46 @@
+# Source files (only dist should be published)
+src/
+*.ts
+!*.d.ts
+
+# Development files
+jest.config.js
+tsconfig*.json
+rollup.config.js
+scripts/
+test-polyhedra-integration.mjs
+
+# Documentation (keep README.md, exclude docs folder)
+docs/
+*.md
+!README.md
+
+# Build artifacts
+*.tsbuildinfo
+*.map
+
+# Development
+.env
+.npmrc
+.git/
+.gitignore
+.github/
+
+# Testing
+coverage/
+.nyc_output/
+__tests__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# CI/CD
+.github/
+

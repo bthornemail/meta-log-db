@@ -1,3 +1,25 @@
+---
+id: meta-log-db-readme
+title: "Meta-Log Database Package"
+level: foundational
+type: documentation
+tags: [meta-log-db, readme, package-overview, installation, usage]
+keywords: [meta-log-db, prolog, datalog, r5rs, sparql, shacl, canvasl, npm-package]
+prerequisites: []
+enables: [meta-log-db-installation, meta-log-db-usage]
+related: [meta-log-db-rfc2119-specification, glossary, canvasl-metaverse-browser-api]
+readingTime: 15
+difficulty: 1
+version: "1.0.0"
+gitTag: "v1.0.0"
+blackboard:
+  status: active
+  assignedAgent: "meta-log-db-documentation-agent"
+  lastUpdate: "2025-01-17"
+  dependencies: []
+  watchers: []
+---
+
 # Meta-Log Database Package
 
 A native npm package providing core database functionality for ProLog, DataLog, and R5RS integration. This package can be `npm link`ed into both OpenCode and Obsidian plugins to provide a common database interface.
@@ -15,7 +37,17 @@ The Meta-Log Database package (`meta-log-db`) provides:
 
 ## Installation
 
+### From npm
+
 ```bash
+npm install meta-log-db
+```
+
+### From Source
+
+```bash
+git clone https://github.com/bthornemail/meta-log-db.git
+cd meta-log-db
 npm install
 npm run build
 npm link
@@ -57,12 +89,30 @@ const sparqlResults = await db.sparqlQuery(`
 const validation = await db.validateShacl();
 ```
 
-## API Reference
+## Documentation
 
-- [CanvasL Metaverse Browser API](./docs/CANVASL_METAVERSE_BROWSER_API.md) - Complete browser API documentation
-- [Real-World Examples](./docs/EXAMPLES.md) - Practical usage examples
-- [Migration Guide](./docs/MIGRATION_GUIDE.md) - Migrating from MetaLogBrowserAdapter
-- [API.md](./API.md) - Node.js API documentation (if available)
+### Specification
+
+- [RFC2119 Specification](./docs/01-Specification/META-LOG-DB-RFC2119.md) - Complete package specification with MUST/SHOULD/MAY requirements
+- [Glossary](./docs/01-Specification/GLOSSARY.md) - Key terms and concepts
+
+### Guides
+
+- [CanvasL Metaverse Browser API](./docs/03-Guides/CANVASL_METAVERSE_BROWSER_API.md) - Complete browser API documentation
+- [Migration Guide](./docs/03-Guides/MIGRATION_GUIDE.md) - Migrating from MetaLogBrowserAdapter
+
+### Examples
+
+- [Real-World Examples](./docs/04-Examples/EXAMPLES.md) - Practical usage examples
+- [R5RS Examples](./docs/04-Examples/R5RS_EXAMPLES.md) - R5RS Scheme parser examples
+- [SHACL Examples](./docs/04-Examples/SHACL_EXAMPLES.md) - SHACL validation examples
+- [SPARQL Examples](./docs/04-Examples/SPARQL_EXAMPLES.md) - SPARQL query examples
+
+### Reference
+
+- [Frontmatter Validation Setup](./docs/02-Reference/FRONTMATTER_VALIDATION_SETUP.md) - TypeScript configuration for frontmatter validation
+- [Linking Setup](./docs/02-Reference/LINKING_SETUP.md) - npm link setup guide
+- [Testing Guide](./docs/02-Reference/TESTING.md) - Testing guide for CanvasL Metaverse Browser
 
 ## Development
 
@@ -177,6 +227,14 @@ npm link meta-log-db
 cd .obsidian/plugins/universal-life-protocol-plugin
 npm link meta-log-db
 ```
+
+## Package Information
+
+- **Package Name**: `meta-log-db`
+- **Version**: 1.0.0
+- **License**: MIT
+- **Node Version**: >=18.0.0
+- **Repository**: https://github.com/bthornemail/meta-log-db
 
 ## License
 

@@ -32,6 +32,8 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "npm run build:all",
     "test": "jest",
+    "test:coverage": "jest --coverage",
+    "test:watch": "jest --watch",
     "verify:browser": "node scripts/verify-browser-build.js"
   },
   "keywords": [
@@ -41,10 +43,25 @@
     "r5rs",
     "jsonl",
     "canvasl",
-    "database"
+    "database",
+    "logic-programming",
+    "sparql",
+    "shacl",
+    "rdf",
+    "typescript"
   ],
-  "author": "Brian Thorne",
-"repository": "https://github.com/bthornemail/meta-log-db",
+  "author": {
+    "name": "Brian Thorne",
+    "url": "https://github.com/bthornemail"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bthornemail/meta-log-db.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bthornemail/meta-log-db/issues"
+  },
+  "homepage": "https://github.com/bthornemail/meta-log-db#readme",
   "license": "MIT",
   "dependencies": {
     "ethers": "^6.0.0"

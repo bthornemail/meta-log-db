@@ -7,3 +7,15 @@ coverage/
 .nyc_output/
 .env
 .npmrc
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# OS
+Thumbs.db
+.DS_Store
