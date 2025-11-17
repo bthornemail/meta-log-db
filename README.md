@@ -10,8 +10,8 @@ enables: [meta-log-db-installation, meta-log-db-usage]
 related: [meta-log-db-rfc2119-specification, glossary, canvasl-metaverse-browser-api]
 readingTime: 15
 difficulty: 1
-version: "1.0.0"
-gitTag: "v1.0.0"
+version: "1.2.0"
+gitTag: "v1.2.0"
 blackboard:
   status: active
   assignedAgent: "meta-log-db-documentation-agent"
@@ -34,6 +34,91 @@ The Meta-Log Database package (`meta-log-db`) provides:
 - **JSONL/CanvasL Parser** - File format parsing and fact extraction
 - **RDF/SPARQL Support** - Triple storage and SPARQL queries
 - **SHACL Validation** - Shape constraint validation
+
+## Extensions (v1.2.0)
+
+The following extensions are available as optional modules. All extensions are disabled by default for backward compatibility.
+
+### Chain Complex & Homology
+
+Algebraic topology validation with ∂² = 0 property checking:
+
+```typescript
+const db = new MetaLogDb({
+  enableHomology: true
+});
+
+const complex: ChainComplex = {
+  C0: [{ id: 'v1', dim: 0, boundary: [], data: {} }],
+  C1: [{ id: 'e1', dim: 1, boundary: ['v1', 'v2'], data: {} }],
+  C2: [],
+  C3: [],
+  C4: [],
+  ∂: new Map([['e1', ['v1', 'v2']]])
+};
+
+const result = db.validateHomology(complex);
+console.log(`Valid: ${result.valid}, Betti numbers: ${result.betti}`);
+```
+
+### MetaLogNode
+
+Atemporal DAG node structure with cryptographic identity:
+
+```typescript
+import { MetaLogNodeManager } from 'meta-log-db/extensions/metalog-node';
+
+const manager = new MetaLogNodeManager();
+const node = await manager.createNode({
+  content: {
+    topo: { type: 'Topology', objects: {}, arcs: [] },
+    geo: { type: 'FeatureCollection', features: [] }
+  },
+  parent: 'genesis'
+});
+
+const isValid = await manager.verifyNode(node);
+```
+
+### Projective/Affine Geometry
+
+Coordinate system transformations:
+
+```typescript
+import { ProjectiveAffineConverter } from 'meta-log-db/extensions/geometry';
+
+const converter = new ProjectiveAffineConverter();
+const projective = converter.affineToProjective({ x: 1, y: 2 });
+const affine = converter.projectiveToAffine({ x: 1, y: 2, z: 0, w: 1 });
+```
+
+### DAG Operations
+
+Directed Acyclic Graph management:
+
+```typescript
+import { DAGManager } from 'meta-log-db/extensions/dag';
+
+const manager = new DAGManager(dag);
+const lca = manager.findLCA('cid1', 'cid2');
+const children = manager.getChildren('cid1');
+const ancestors = manager.getAncestors('cid1');
+```
+
+### Org Mode R5RS Functions
+
+Org Mode document parsing:
+
+```typescript
+const db = new MetaLogDb({
+  enableOrgMode: true
+});
+
+// Via R5RS functions
+const ast = await db.executeR5RS('r5rs:parse-org-document', [orgContent]);
+const headings = await db.executeR5RS('r5rs:extract-headings', [orgContent]);
+const blocks = await db.executeR5RS('r5rs:extract-source-blocks', [orgContent]);
+```
 
 ## Installation
 
@@ -63,7 +148,13 @@ const db = new MetaLogDb({
   enableProlog: true,
   enableDatalog: true,
   enableRdf: true,
-  enableShacl: true
+  enableShacl: true,
+  // Extensions (optional)
+  enableHomology: true,
+  enableMetaLogNode: true,
+  enableProjectiveAffine: true,
+  enableDAG: true,
+  enableOrgMode: true
 });
 
 // Load JSONL canvas
@@ -149,7 +240,13 @@ const browser = new CanvasLMetaverseBrowser({
   enableRdf: true,
   enableShacl: true,
   cacheStrategy: 'both', // Use both memory and IndexedDB cache
-  indexedDBName: 'meta-log-db'
+  indexedDBName: 'meta-log-db',
+  // Extensions (optional)
+  enableHomology: true,
+  enableMetaLogNode: true,
+  enableProjectiveAffine: true,
+  enableDAG: true,
+  enableOrgMode: true
 });
 
 // Initialize (sets up IndexedDB, file I/O, etc.)
@@ -231,7 +328,7 @@ npm link meta-log-db
 ## Package Information
 
 - **Package Name**: `meta-log-db`
-- **Version**: 1.0.0
+- **Version**: 1.2.0
 - **License**: MIT
 - **Node Version**: >=18.0.0
 - **Repository**: https://github.com/bthornemail/meta-log-db

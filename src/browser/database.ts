@@ -13,6 +13,7 @@ import { BrowserJsonlParser } from './jsonl/browser-parser.js';
 import { BrowserR5RSRegistry } from './r5rs/browser-registry.js';
 import { BrowserFileIO } from './io.js';
 import { IndexedDBStorage } from './indexeddb-storage.js';
+import { HomologyValidator, ChainComplex, HomologyResult } from '../extensions/homology/index.js';
 
 export interface BrowserConfig extends MetaLogDbConfig {
   enableEncryption?: boolean;
@@ -20,6 +21,11 @@ export interface BrowserConfig extends MetaLogDbConfig {
   indexedDBName?: string;
   cacheStrategy?: 'memory' | 'indexeddb' | 'both';
   r5rsEngineURL?: string; // URL for R5RS engine file
+  enableHomology?: boolean; // Enable chain complex/homology validation
+  enableMetaLogNode?: boolean; // Enable MetaLogNode structure
+  enableProjectiveAffine?: boolean; // Enable projective/affine geometry
+  enableDAG?: boolean; // Enable DAG operations
+  enableOrgMode?: boolean; // Enable Org Mode R5RS functions
 }
 
 /**
@@ -391,6 +397,30 @@ export class MetaLogDbBrowser {
    */
   async clearCache(): Promise<void> {
     await this.fileIO.clearCache();
+  }
+
+  /**
+   * Validate homology of chain complex
+   * Requires enableHomology: true in config
+   */
+  validateHomology(complex: ChainComplex): HomologyResult {
+    if (!this.config.enableHomology) {
+      throw new Error('Homology extension not enabled. Set enableHomology: true in config');
+    }
+    const validator = new HomologyValidator(complex);
+    return validator.validate();
+  }
+
+  /**
+   * Compute Betti number for dimension n
+   * Requires enableHomology: true in config
+   */
+  computeBetti(complex: ChainComplex, n: number): number {
+    if (!this.config.enableHomology) {
+      throw new Error('Homology extension not enabled. Set enableHomology: true in config');
+    }
+    const validator = new HomologyValidator(complex);
+    return validator.computeBetti(n);
   }
 }
 

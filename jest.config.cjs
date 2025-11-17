@@ -23,7 +23,6 @@ module.exports = {
         '!src/browser/**',
       ],
       coverageDirectory: 'coverage/node',
-      coverageReporters: ['text', 'lcov', 'html'],
       moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
       },
@@ -48,12 +47,10 @@ module.exports = {
         '!src/browser/**/__tests__/**',
       ],
       coverageDirectory: 'coverage/browser',
-      coverageReporters: ['text', 'lcov', 'html'],
       moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
       },
     },
   ],
   coverageDirectory: 'coverage',
-  coverageReporters: ['text', 'lcov', 'html'],
 };

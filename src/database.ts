@@ -5,6 +5,7 @@ import { R5RSRegistry } from './r5rs/registry.js';
 import { JsonlParser } from './jsonl/parser.js';
 import { TripleStore } from './rdf/triple-store.js';
 import { ShaclValidator } from './shacl/validator.js';
+import { HomologyValidator, ChainComplex, HomologyResult } from './extensions/homology/index.js';
 
 /**
  * Meta-Log Database - Main class
@@ -264,6 +265,30 @@ export class MetaLogDb {
    */
   getConfig(): MetaLogDbConfig {
     return { ...this.config };
+  }
+
+  /**
+   * Validate homology of chain complex
+   * Requires enableHomology: true in config
+   */
+  validateHomology(complex: ChainComplex): HomologyResult {
+    if (!this.config.enableHomology) {
+      throw new Error('Homology extension not enabled. Set enableHomology: true in config');
+    }
+    const validator = new HomologyValidator(complex);
+    return validator.validate();
+  }
+
+  /**
+   * Compute Betti number for dimension n
+   * Requires enableHomology: true in config
+   */
+  computeBetti(complex: ChainComplex, n: number): number {
+    if (!this.config.enableHomology) {
+      throw new Error('Homology extension not enabled. Set enableHomology: true in config');
+    }
+    const validator = new HomologyValidator(complex);
+    return validator.computeBetti(n);
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "meta-log-db",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Native database package for Meta-Log (ProLog, DataLog, R5RS)",
   "type": "module",
   "main": "dist/index.js",
@@ -64,7 +64,8 @@
   "homepage": "https://github.com/bthornemail/meta-log-db#readme",
   "license": "MIT",
   "dependencies": {
-    "ethers": "^6.0.0"
+    "ethers": "^6.0.0",
+    "orga": "^4.5.1"
   },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
@@ -73,6 +74,7 @@
     "@types/jest": "^29.5.14",
     "@types/node": "^20.0.0",
     "jest": "^29.0.0",
+    "jest-environment-jsdom": "^30.2.0",
     "rollup": "^4.9.0",
     "ts-jest": "^29.4.5",
     "typescript": "^5.0.0"

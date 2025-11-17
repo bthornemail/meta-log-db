@@ -7,6 +7,11 @@
 import { BrowserFileIO } from '../io.js';
 import { R5RSParser, SchemeExpression } from '../../r5rs/parser.js';
 import { decryptFileContent } from '../crypto/storage-encryption.js';
+import { HomologyValidator } from '../../extensions/homology/validator.js';
+import { MetaLogNodeManager, CreateNodeOptions } from '../../extensions/metalog-node/index.js';
+import { ProjectiveAffineConverter } from '../../extensions/geometry/index.js';
+import { DAGManager } from '../../extensions/dag/index.js';
+import * as OrgModeFunctions from '../../extensions/org-mode/r5rs-functions.js';
 
 export interface BrowserR5RSRegistryConfig {
   enableEncryption?: boolean;
@@ -136,6 +141,21 @@ export class BrowserR5RSRegistry {
     
     // Categorical functions
     this.registerCategoricalFunctions();
+    
+    // Homology functions
+    this.registerHomologyFunctions();
+    
+    // MetaLogNode functions
+    this.registerMetaLogNodeFunctions();
+    
+    // Geometry functions
+    this.registerGeometryFunctions();
+    
+    // DAG functions
+    this.registerDAGFunctions();
+    
+    // Org Mode functions
+    this.registerOrgModeFunctions();
   }
 
   /**
@@ -661,6 +681,274 @@ export class BrowserR5RSRegistry {
         throw new Error('Both arguments must be numbers');
       }
       return { alpha, beta };
+    });
+  }
+
+  /**
+   * Register Homology R5RS functions
+   */
+  private registerHomologyFunctions(): void {
+    /**
+     * Validate homology of chain complex
+     * r5rs:validate-homology(complex)
+     * Returns: {valid: boolean, betti: number[], eulerCharacteristic: number, violations?: string[]}
+     */
+    this.register('r5rs:validate-homology', (complex: any) => {
+      if (!complex || typeof complex !== 'object') {
+        throw new Error('Chain complex is required');
+      }
+      const validator = new HomologyValidator(complex);
+      return validator.validate();
+    });
+
+    /**
+     * Compute Betti number for dimension n
+     * r5rs:compute-betti(complex, n)
+     * Returns: Betti number β_n
+     */
+    this.register('r5rs:compute-betti', (complex: any, n: number) => {
+      if (!complex || typeof complex !== 'object') {
+        throw new Error('Chain complex is required');
+      }
+      if (typeof n !== 'number' || n < 0 || n > 4) {
+        throw new Error('Dimension must be a number between 0 and 4');
+      }
+      const validator = new HomologyValidator(complex);
+      return validator.computeBetti(n);
+    });
+
+    /**
+     * Compute Euler characteristic
+     * r5rs:compute-euler-characteristic(complex)
+     * Returns: Euler characteristic χ
+     */
+    this.register('r5rs:compute-euler-characteristic', (complex: any) => {
+      if (!complex || typeof complex !== 'object') {
+        throw new Error('Chain complex is required');
+      }
+      const validator = new HomologyValidator(complex);
+      return validator.computeEulerCharacteristic();
+    });
+
+    /**
+     * Get boundary of a cell
+     * r5rs:boundary-operator(complex, cellId, dim)
+     * Returns: Array of boundary cell IDs
+     */
+    this.register('r5rs:boundary-operator', (complex: any, cellId: string, dim?: number) => {
+      if (!complex || typeof complex !== 'object') {
+        throw new Error('Chain complex is required');
+      }
+      if (typeof cellId !== 'string') {
+        throw new Error('Cell ID must be a string');
+      }
+      return complex.boundary?.get(cellId) || [];
+    });
+  }
+
+  /**
+   * Register MetaLogNode R5RS functions
+   */
+  private registerMetaLogNodeFunctions(): void {
+    const manager = new MetaLogNodeManager();
+
+    /**
+     * Create MetaLogNode
+     * r5rs:create-metalog-node(content, parent?, path?)
+     */
+    this.register('r5rs:create-metalog-node', async (content: any, parent?: string, path?: string) => {
+      if (!content || typeof content !== 'object' || !content.topo || !content.geo) {
+        throw new Error('Content with topo and geo is required');
+      }
+      const options: CreateNodeOptions = {
+        content: {
+          topo: content.topo,
+          geo: content.geo
+        },
+        parent: parent || 'genesis',
+        path
+      };
+      return await manager.createNode(options);
+    });
+
+    /**
+     * Verify MetaLogNode signature
+     * r5rs:verify-metalog-node(node, publicKey?)
+     */
+    this.register('r5rs:verify-metalog-node', async (node: any, publicKey?: string) => {
+      if (!node || typeof node !== 'object') {
+        throw new Error('MetaLogNode is required');
+      }
+      return await manager.verifyNode(node, publicKey);
+    });
+
+    /**
+     * Compute CID from content
+     * r5rs:compute-cid(content)
+     */
+    this.register('r5rs:compute-cid', async (content: any) => {
+      if (!content || typeof content !== 'object' || !content.topo || !content.geo) {
+        throw new Error('Content with topo and geo is required');
+      }
+      return await manager.computeCID({
+        topo: content.topo,
+        geo: content.geo
+      });
+    });
+  }
+
+  /**
+   * Register Geometry R5RS functions
+   */
+  private registerGeometryFunctions(): void {
+    const converter = new ProjectiveAffineConverter();
+
+    /**
+     * Convert affine to projective coordinates
+     * r5rs:affine-to-projective(affine)
+     */
+    this.register('r5rs:affine-to-projective', (affine: any) => {
+      if (!affine || typeof affine !== 'object' || typeof affine.x !== 'number' || typeof affine.y !== 'number') {
+        throw new Error('Affine coordinates with x and y are required');
+      }
+      return converter.affineToProjective(affine);
+    });
+
+    /**
+     * Convert projective to affine coordinates
+     * r5rs:projective-to-affine(projective)
+     */
+    this.register('r5rs:projective-to-affine', (projective: any) => {
+      if (!projective || typeof projective !== 'object' || 
+          typeof projective.x !== 'number' || typeof projective.y !== 'number' ||
+          typeof projective.z !== 'number' || typeof projective.w !== 'number') {
+        throw new Error('Projective coordinates with x, y, z, w are required');
+      }
+      return converter.projectiveToAffine(projective);
+    });
+  }
+
+  /**
+   * Register DAG R5RS functions
+   */
+  private registerDAGFunctions(): void {
+    /**
+     * Find Lowest Common Ancestor (LCA)
+     * r5rs:find-lca(dag, cid1, cid2)
+     */
+    this.register('r5rs:find-lca', (dag: any, cid1: string, cid2: string) => {
+      if (!dag || typeof dag !== 'object') {
+        throw new Error('DAG is required');
+      }
+      if (typeof cid1 !== 'string' || typeof cid2 !== 'string') {
+        throw new Error('Both CIDs must be strings');
+      }
+      const manager = new DAGManager(dag);
+      return manager.findLCA(cid1, cid2);
+    });
+
+    /**
+     * Get children of a node
+     * r5rs:get-children(dag, cid)
+     */
+    this.register('r5rs:get-children', (dag: any, cid: string) => {
+      if (!dag || typeof dag !== 'object') {
+        throw new Error('DAG is required');
+      }
+      if (typeof cid !== 'string') {
+        throw new Error('CID must be a string');
+      }
+      const manager = new DAGManager(dag);
+      return manager.getChildren(cid);
+    });
+
+    /**
+     * Get ancestors of a node
+     * r5rs:get-ancestors(dag, cid)
+     */
+    this.register('r5rs:get-ancestors', (dag: any, cid: string) => {
+      if (!dag || typeof dag !== 'object') {
+        throw new Error('DAG is required');
+      }
+      if (typeof cid !== 'string') {
+        throw new Error('CID must be a string');
+      }
+      const manager = new DAGManager(dag);
+      return manager.getAncestors(cid);
+    });
+  }
+
+  /**
+   * Register Org Mode R5RS functions
+   */
+  private registerOrgModeFunctions(): void {
+    /**
+     * Parse Org Mode document
+     * r5rs:parse-org-document(content)
+     */
+    this.register('r5rs:parse-org-document', async (content: string) => {
+      if (typeof content !== 'string') {
+        throw new Error('Content must be a string');
+      }
+      return await OrgModeFunctions.parseOrgDocument(content);
+    });
+
+    /**
+     * Extract headings from Org Mode document
+     * r5rs:extract-headings(content)
+     */
+    this.register('r5rs:extract-headings', async (content: string) => {
+      if (typeof content !== 'string') {
+        throw new Error('Content must be a string');
+      }
+      return await OrgModeFunctions.extractHeadings(content);
+    });
+
+    /**
+     * Extract source blocks from Org Mode document
+     * r5rs:extract-source-blocks(content)
+     */
+    this.register('r5rs:extract-source-blocks', async (content: string) => {
+      if (typeof content !== 'string') {
+        throw new Error('Content must be a string');
+      }
+      return await OrgModeFunctions.extractSourceBlocks(content);
+    });
+
+    /**
+     * Extract property drawers from Org Mode document
+     * r5rs:extract-property-drawers(content)
+     */
+    this.register('r5rs:extract-property-drawers', async (content: string) => {
+      if (typeof content !== 'string') {
+        throw new Error('Content must be a string');
+      }
+      return await OrgModeFunctions.extractPropertyDrawers(content);
+    });
+
+    /**
+     * Expand Noweb references
+     * r5rs:expand-noweb(content, namedBlocks)
+     */
+    this.register('r5rs:expand-noweb', async (content: string, namedBlocks: any) => {
+      if (typeof content !== 'string') {
+        throw new Error('Content must be a string');
+      }
+      const blocksMap = new Map<string, string>();
+      if (namedBlocks && typeof namedBlocks === 'object') {
+        if (Array.isArray(namedBlocks)) {
+          for (const block of namedBlocks) {
+            if (block.name && block.content) {
+              blocksMap.set(block.name, block.content);
+            }
+          }
+        } else {
+          for (const [key, value] of Object.entries(namedBlocks)) {
+            blocksMap.set(key, String(value));
+          }
+        }
+      }
+      return await OrgModeFunctions.expandNoweb(content, blocksMap);
     });
   }
 

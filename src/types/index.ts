@@ -11,6 +11,11 @@ export interface MetaLogDbConfig {
   enableDatalog?: boolean;
   enableRdf?: boolean;
   enableShacl?: boolean;
+  enableHomology?: boolean; // Enable chain complex/homology validation
+  enableMetaLogNode?: boolean; // Enable MetaLogNode structure
+  enableProjectiveAffine?: boolean; // Enable projective/affine geometry
+  enableDAG?: boolean; // Enable DAG operations
+  enableOrgMode?: boolean; // Enable Org Mode R5RS functions
 }
 
 export interface Fact {
