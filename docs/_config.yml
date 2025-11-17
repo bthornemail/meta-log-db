@@ -1,0 +1,58 @@
+# Site settings
+title: Meta-Log Database
+description: Native database package for ProLog, DataLog, and R5RS integration
+baseurl: "/meta-log-db"
+url: "https://bthornemail.github.io"
+
+# Repository
+repository: "bthornemail/meta-log-db"
+github:
+  repository_url: https://github.com/bthornemail/meta-log-db
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+
+# Theme (using minima theme)
+theme: minima
+
+# Navigation
+navigation:
+  - title: Specification
+    url: /meta-log-db/01-Specification/
+  - title: Reference
+    url: /meta-log-db/02-Reference/
+  - title: Guides
+    url: /meta-log-db/03-Guides/
+  - title: Examples
+    url: /meta-log-db/04-Examples/
+
+# Exclude files and directories
+exclude:
+  - "00-Inbox"
+  - "node_modules"
+  - "*.log"
+  - ".git"
+  - ".gitignore"
+  - "Gemfile"
+  - "Gemfile.lock"
+  - "vendor"
+
+# Include files
+include:
+  - "_pages"
+
+# Kramdown settings
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# Minima theme settings
+minima:
+  social_links:
+    github: bthornemail
+
