@@ -1,25 +1,3 @@
----
-id: meta-log-db-linking-setup
-title: "Meta-Log Database Linking Setup"
-level: practical
-type: guide
-tags: [npm-link, setup, development, package-management]
-keywords: [npm-link, package-linking, development-setup, meta-log-db-setup]
-prerequisites: []
-enables: [meta-log-db-development, plugin-integration]
-related: [meta-log-db-rfc2119-specification]
-readingTime: 15
-difficulty: 2
-version: "1.0.0"
-gitTag: "v1.0.0"
-blackboard:
-  status: active
-  assignedAgent: "meta-log-db-documentation-agent"
-  lastUpdate: "2025-01-17"
-  dependencies: []
-  watchers: []
----
-
 # Meta-Log Database Linking Setup
 
 ## ✅ Completed Setup

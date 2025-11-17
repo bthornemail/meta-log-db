@@ -1,25 +1,3 @@
----
-id: shacl-examples
-title: "SHACL Validation Examples"
-level: practical
-type: examples
-tags: [shacl, validation, examples, rdf, shape-validation]
-keywords: [shacl-examples, shacl-validation, rdf-validation, shape-constraints]
-prerequisites: [meta-log-db-rfc2119-specification]
-enables: [shacl-implementation, validation-patterns]
-related: [meta-log-db-rfc2119-specification, canvasl-metaverse-browser-api]
-readingTime: 40
-difficulty: 3
-version: "1.0.0"
-gitTag: "v1.0.0"
-blackboard:
-  status: active
-  assignedAgent: "meta-log-db-documentation-agent"
-  lastUpdate: "2025-01-17"
-  dependencies: []
-  watchers: []
----
-
 # SHACL Validation Examples
 
 This document provides comprehensive examples of using the enhanced SHACL shape parser and validator in meta-log-db.

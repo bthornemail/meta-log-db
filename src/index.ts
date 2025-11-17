@@ -1,5 +1,5 @@
 /**
- * Meta-Log Database - Main Export (Node.js)
+ * Meta-Log Database - Main Export
  */
 
 export { MetaLogDb, MetaLogDbConfig } from './database.js';
@@ -10,13 +10,5 @@ export { JsonlParser } from './jsonl/parser.js';
 export { TripleStore } from './rdf/triple-store.js';
 export { ShaclValidator } from './shacl/validator.js';
 
-// Export browser classes (for conditional imports)
-export { MetaLogDbBrowser, BrowserConfig } from './browser/database.js';
-export { BrowserFileIO } from './browser/io.js';
-export { IndexedDBStorage } from './browser/indexeddb-storage.js';
-
 // Export types
 export * from './types/index.js';
-
-// Export validation utilities
-export * from './validation/frontmatter-validator.js';

@@ -1,25 +1,3 @@
----
-id: sparql-examples
-title: "SPARQL Query Examples"
-level: practical
-type: examples
-tags: [sparql, rdf, query-examples, examples]
-keywords: [sparql-examples, sparql-queries, rdf-queries, triple-store]
-prerequisites: [meta-log-db-rfc2119-specification]
-enables: [sparql-implementation, query-patterns]
-related: [meta-log-db-rfc2119-specification, canvasl-metaverse-browser-api]
-readingTime: 40
-difficulty: 3
-version: "1.0.0"
-gitTag: "v1.0.0"
-blackboard:
-  status: active
-  assignedAgent: "meta-log-db-documentation-agent"
-  lastUpdate: "2025-01-17"
-  dependencies: []
-  watchers: []
----
-
 # SPARQL Query Examples
 
 This document provides comprehensive examples of using the enhanced SPARQL query support in meta-log-db.

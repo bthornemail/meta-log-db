@@ -2,20 +2,12 @@
  * Type definitions for Meta-Log Database
  */
 
-// Export frontmatter types
-export * from './frontmatter.js';
-
 export interface MetaLogDbConfig {
   r5rsEnginePath?: string;
   enableProlog?: boolean;
   enableDatalog?: boolean;
   enableRdf?: boolean;
   enableShacl?: boolean;
-  enableHomology?: boolean; // Enable chain complex/homology validation
-  enableMetaLogNode?: boolean; // Enable MetaLogNode structure
-  enableProjectiveAffine?: boolean; // Enable projective/affine geometry
-  enableDAG?: boolean; // Enable DAG operations
-  enableOrgMode?: boolean; // Enable Org Mode R5RS functions
 }
 
 export interface Fact {
