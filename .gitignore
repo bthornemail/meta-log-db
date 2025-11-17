@@ -5,3 +5,5 @@ dist/
 *.tsbuildinfo
 coverage/
 .nyc_output/
+.npmrc
+.env
