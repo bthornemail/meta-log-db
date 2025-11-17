@@ -3,6 +3,8 @@ import { R5RSParser, SchemeExpression } from './parser.js';
 import { HomologyValidator } from '../extensions/homology/validator.js';
 import { MetaLogNodeManager, CreateNodeOptions } from '../extensions/metalog-node/index.js';
 import { ProjectiveAffineConverter } from '../extensions/geometry/index.js';
+import { FormatExporter, boundary_TopoJSON, boundary_GeoJSON, boundary_JSONL } from '../extensions/format-fibration/index.js';
+import { ChainComplex, Cell } from '../extensions/homology/types.js';
 import { DAGManager } from '../extensions/dag/index.js';
 import * as OrgModeFunctions from '../extensions/org-mode/r5rs-functions.js';
 
@@ -110,6 +112,9 @@ export class R5RSRegistry {
     
     // Org Mode functions
     this.registerOrgModeFunctions();
+    
+    // A₁₁ Chain Complex functions
+    this.registerA11ChainComplexFunctions();
   }
 
   /**
@@ -840,6 +845,200 @@ export class R5RSRegistry {
       }
       const manager = new DAGManager(dag);
       return manager.getAncestors(cid);
+    });
+  }
+
+  /**
+   * Register A₁₁ Chain Complex R5RS functions
+   * (NO networking - that stays in automata-metaverse)
+   */
+  private registerA11ChainComplexFunctions(): void {
+    const exporter = new FormatExporter();
+
+    /**
+     * Create chain complex cell
+     * r5rs:create-cell(dimension, id, boundary, data)
+     * dimension: 0-4 (C₀-C₄)
+     * Returns: Cell object
+     */
+    this.register('r5rs:create-cell', (dim: number, id: string, boundary: string[], data: any) => {
+      if (typeof dim !== 'number' || dim < 0 || dim > 4) {
+        throw new Error('Dimension must be 0, 1, 2, 3, or 4');
+      }
+      if (typeof id !== 'string') {
+        throw new Error('ID must be a string');
+      }
+      if (!Array.isArray(boundary)) {
+        throw new Error('Boundary must be an array');
+      }
+      return { id, dim: dim as 0 | 1 | 2 | 3 | 4, boundary, data: data || {} };
+    });
+
+    /**
+     * Build chain complex from cells
+     * r5rs:build-chain-complex(cells)
+     * Returns: ChainComplex object
+     */
+    this.register('r5rs:build-chain-complex', (cells: any[]) => {
+      if (!Array.isArray(cells)) {
+        throw new Error('Cells must be an array');
+      }
+      
+      const complex: ChainComplex = {
+        C0: cells.filter((c: any) => c.dim === 0) as Cell<0>[],
+        C1: cells.filter((c: any) => c.dim === 1) as Cell<1>[],
+        C2: cells.filter((c: any) => c.dim === 2) as Cell<2>[],
+        C3: cells.filter((c: any) => c.dim === 3) as Cell<3>[],
+        C4: cells.filter((c: any) => c.dim === 4) as Cell<4>[],
+        boundary: new Map(cells.map((c: any) => [c.id, c.boundary || []]))
+      };
+      return complex;
+    });
+
+    /**
+     * Format fibration: Export chain complex to format
+     * r5rs:format-fibration(complex, format)
+     * format: '0d' | '1d' | '2d' | '3d' | '4d'
+     * Returns: Exported format string
+     */
+    this.register('r5rs:format-fibration', (complex: any, format: string) => {
+      if (!complex || typeof complex !== 'object') {
+        throw new Error('Chain complex is required');
+      }
+      if (typeof format !== 'string' || !['0d', '1d', '2d', '3d', '4d'].includes(format.toLowerCase())) {
+        throw new Error('Format must be one of: 0d, 1d, 2d, 3d, 4d');
+      }
+      
+      // Convert to ChainComplex if needed
+      const chainComplex: ChainComplex = complex.boundary instanceof Map 
+        ? complex 
+        : {
+            ...complex,
+            boundary: new Map(Array.isArray(complex.boundary) 
+              ? complex.boundary 
+              : Object.entries(complex.boundary || {}))
+          };
+      
+      switch (format.toLowerCase()) {
+        case '0d': return exporter.export0D(chainComplex);
+        case '1d': return exporter.export1D(chainComplex);
+        case '2d': return exporter.export2D(chainComplex);
+        case '3d': return exporter.export3D(chainComplex);
+        case '4d': return exporter.export4D(chainComplex);
+        default: throw new Error(`Unknown format: ${format}`);
+      }
+    });
+
+    /**
+     * Format conversion operators (boundary operators)
+     * ∂₃: TopoJSON → GeoJSON (forget arc sharing)
+     * r5rs:topojson-to-geojson(topojson)
+     */
+    this.register('r5rs:topojson-to-geojson', (topojson: any) => {
+      if (!topojson || typeof topojson !== 'object') {
+        throw new Error('TopoJSON object is required');
+      }
+      const result = boundary_TopoJSON(topojson);
+      return JSON.stringify(result);
+    });
+
+    /**
+     * ∂₂: GeoJSON → JSONL (forget geometry)
+     * r5rs:geojson-to-jsonl(geojson)
+     */
+    this.register('r5rs:geojson-to-jsonl', (geojson: any) => {
+      if (!geojson || typeof geojson !== 'object') {
+        throw new Error('GeoJSON object is required');
+      }
+      return boundary_GeoJSON(geojson);
+    });
+
+    /**
+     * ∂₁: JSONL → JSON Canvas (forget ordering)
+     * r5rs:jsonl-to-json-canvas(jsonl)
+     */
+    this.register('r5rs:jsonl-to-json-canvas', (jsonl: string) => {
+      if (typeof jsonl !== 'string') {
+        throw new Error('JSONL string is required');
+      }
+      const result = boundary_JSONL(jsonl);
+      return JSON.stringify(result);
+    });
+
+    /**
+     * Export to specific dimension format (convenience functions)
+     * r5rs:export-0d(complex)
+     */
+    this.register('r5rs:export-0d', (complex: any) => {
+      const chainComplex: ChainComplex = complex.boundary instanceof Map 
+        ? complex 
+        : {
+            ...complex,
+            boundary: new Map(Array.isArray(complex.boundary) 
+              ? complex.boundary 
+              : Object.entries(complex.boundary || {}))
+          };
+      return exporter.export0D(chainComplex);
+    });
+
+    /**
+     * r5rs:export-1d(complex)
+     */
+    this.register('r5rs:export-1d', (complex: any) => {
+      const chainComplex: ChainComplex = complex.boundary instanceof Map 
+        ? complex 
+        : {
+            ...complex,
+            boundary: new Map(Array.isArray(complex.boundary) 
+              ? complex.boundary 
+              : Object.entries(complex.boundary || {}))
+          };
+      return exporter.export1D(chainComplex);
+    });
+
+    /**
+     * r5rs:export-2d(complex)
+     */
+    this.register('r5rs:export-2d', (complex: any) => {
+      const chainComplex: ChainComplex = complex.boundary instanceof Map 
+        ? complex 
+        : {
+            ...complex,
+            boundary: new Map(Array.isArray(complex.boundary) 
+              ? complex.boundary 
+              : Object.entries(complex.boundary || {}))
+          };
+      return exporter.export2D(chainComplex);
+    });
+
+    /**
+     * r5rs:export-3d(complex)
+     */
+    this.register('r5rs:export-3d', (complex: any) => {
+      const chainComplex: ChainComplex = complex.boundary instanceof Map 
+        ? complex 
+        : {
+            ...complex,
+            boundary: new Map(Array.isArray(complex.boundary) 
+              ? complex.boundary 
+              : Object.entries(complex.boundary || {}))
+          };
+      return exporter.export3D(chainComplex);
+    });
+
+    /**
+     * r5rs:export-4d(complex)
+     */
+    this.register('r5rs:export-4d', (complex: any) => {
+      const chainComplex: ChainComplex = complex.boundary instanceof Map 
+        ? complex 
+        : {
+            ...complex,
+            boundary: new Map(Array.isArray(complex.boundary) 
+              ? complex.boundary 
+              : Object.entries(complex.boundary || {}))
+          };
+      return exporter.export4D(chainComplex);
     });
   }
 

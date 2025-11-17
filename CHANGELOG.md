@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-01-XX
+
+### Added
+- **Format Fibration Extension**: Chain complex format export following A₁₁ specification
+  - `FormatExporter` class for exporting chain complexes to 0D-4D formats
+  - Format fibration: CANVASL (4D) → TopoJSON (3D) → GeoJSON (2D) → JSONL (1D) → JSON Canvas (0D)
+  - Boundary operators: `∂₄`, `∂₃`, `∂₂`, `∂₁` for format downgrades
+  - R5RS functions: `r5rs:create-cell`, `r5rs:build-chain-complex`, `r5rs:format-fibration`, `r5rs:export-0d`, `r5rs:export-1d`, `r5rs:export-2d`, `r5rs:export-3d`, `r5rs:export-4d`, `r5rs:topojson-to-geojson`, `r5rs:geojson-to-jsonl`, `r5rs:jsonl-to-json-canvas`
+  - Extends 0D-7D dimensional system with chain complex structure (C₀-C₄)
+  - Integrates with existing Homology extension for validation
+  - **NO networking** - networking stays in `automata-metaverse` package
+
 ## [1.2.0] - 2025-01-XX
 
 ### Added

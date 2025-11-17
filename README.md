@@ -120,6 +120,44 @@ const headings = await db.executeR5RS('r5rs:extract-headings', [orgContent]);
 const blocks = await db.executeR5RS('r5rs:extract-source-blocks', [orgContent]);
 ```
 
+### Format Fibration (A₁₁ Chain Complex)
+
+Chain complex format export following the A₁₁ specification. Extends the 0D-7D dimensional system with chain complex structure (C₀-C₄) and format fibration:
+
+```typescript
+import { FormatExporter } from 'meta-log-db/extensions/format-fibration';
+
+const exporter = new FormatExporter();
+
+// Create chain complex cells
+const cell0 = await db.executeR5RS('r5rs:create-cell', [0, 'v1', [], { label: 'vertex' }]);
+const cell1 = await db.executeR5RS('r5rs:create-cell', [1, 'e1', ['v1', 'v2'], { weight: 1 }]);
+
+// Build chain complex
+const complex = await db.executeR5RS('r5rs:build-chain-complex', [[cell0, cell1]]);
+
+// Export to different formats
+const jsonCanvas = await db.executeR5RS('r5rs:export-0d', [complex]);  // JSON Canvas
+const jsonl = await db.executeR5RS('r5rs:export-1d', [complex]);        // JSONL
+const geojson = await db.executeR5RS('r5rs:export-2d', [complex]);    // GeoJSON
+const topojson = await db.executeR5RS('r5rs:export-3d', [complex]);    // TopoJSON
+const canvasl = await db.executeR5RS('r5rs:export-4d', [complex]);    // CANVASL (with homology)
+
+// Format conversion operators (boundary operators)
+const geo = await db.executeR5RS('r5rs:topojson-to-geojson', [topojson]);  // ∂₃
+const jsonl2 = await db.executeR5RS('r5rs:geojson-to-jsonl', [geo]);       // ∂₂
+const canvas = await db.executeR5RS('r5rs:jsonl-to-json-canvas', [jsonl2]); // ∂₁
+```
+
+**Format Fibration Structure:**
+- **4D (CANVASL)**: Full chain complex with homology validation
+- **3D (TopoJSON)**: Forget evolution contexts (∂₄)
+- **2D (GeoJSON)**: Forget arc sharing (∂₃)
+- **1D (JSONL)**: Forget geometry (∂₂)
+- **0D (JSON Canvas)**: Forget ordering (∂₁)
+
+**Note**: This extension provides R5RS functions for chain complex operations. Networking functionality (WebRTC, MQTT) remains in the `automata-metaverse` package to maintain separation of concerns.
+
 ## Installation
 
 ### From npm
