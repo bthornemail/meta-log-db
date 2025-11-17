@@ -29,6 +29,8 @@ navigation:
     url: /meta-log-db/03-Guides/
   - title: Examples
     url: /meta-log-db/04-Examples/
+  - title: Extensions (v1.2.0)
+    url: /meta-log-db/03-Guides/HOMOLOGY_EXTENSION.html
 
 # Exclude files and directories
 exclude:
