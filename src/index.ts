@@ -20,3 +20,6 @@ export * from './types/index.js';
 
 // Export validation utilities
 export * from './validation/frontmatter-validator.js';
+
+// Export E8 modules
+export * from './e8/index.js';
