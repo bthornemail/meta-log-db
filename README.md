@@ -34,6 +34,8 @@ The Meta-Log Database package (`meta-log-db`) provides:
 - **JSONL/CanvasL Parser** - File format parsing and fact extraction
 - **RDF/SPARQL Support** - Triple storage and SPARQL queries
 - **SHACL Validation** - Shape constraint validation
+- **E8 Lattice** - E8 exceptional Lie algebra operations (BIP32 mapping, Weyl group, p-adic heights)
+- **E8 Theta Series** - Weight-4 modular forms for quorum stability prediction
 
 ## Installation
 
@@ -54,6 +56,8 @@ npm link
 ```
 
 ## Usage
+
+### Basic Database Operations
 
 ```typescript
 import { MetaLogDb } from 'meta-log-db';
@@ -87,6 +91,36 @@ const sparqlResults = await db.sparqlQuery(`
 
 // SHACL validation
 const validation = await db.validateShacl();
+```
+
+### E8 Lattice Operations
+
+```typescript
+import { E8Lattice, E8ThetaSeries } from 'meta-log-db/e8';
+
+// Create E8 lattice instance
+const lattice = new E8Lattice();
+
+// Map BIP32 path to E8 point
+const point = lattice.bip32ToE8("m/44'/0'/0'/0/0");
+console.log(point.coords); // 8D coordinates
+
+// Compute distance metrics
+const p1 = lattice.bip32ToE8("m/44'/0'/0'");
+const p2 = lattice.bip32ToE8("m/44'/0'/0'/0/0");
+const metrics = lattice.distanceForML(p1, p2);
+// { euclidean, geodesic, padic2, padic3, weylDistance }
+
+// Verify FRBAC delegation
+const isValid = lattice.verifyFrbacDelegation(p1, p2);
+
+// E8 Theta Series
+const theta = new E8ThetaSeries(20);
+const coeff = theta.coefficient(1); // Returns 240 (r_E8(1))
+
+// Predict quorum stability
+const stability = theta.predictQuorumStability(voterFeatures);
+// { stabilityScore, qqfDeterminant, thetaGrowth, formType }
 ```
 
 ## Documentation
@@ -231,7 +265,7 @@ npm link meta-log-db
 ## Package Information
 
 - **Package Name**: `meta-log-db`
-- **Version**: 1.0.0
+- **Version**: 1.1.0
 - **License**: MIT
 - **Node Version**: >=18.0.0
 - **Repository**: https://github.com/bthornemail/meta-log-db

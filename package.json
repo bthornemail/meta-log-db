@@ -1,7 +1,7 @@
 {
   "name": "meta-log-db",
-  "version": "1.0.0",
-  "description": "Native database package for Meta-Log (ProLog, DataLog, R5RS)",
+  "version": "1.1.0",
+  "description": "Native database package for Meta-Log (ProLog, DataLog, R5RS, E8 Lattice)",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -16,6 +16,11 @@
     "./browser": {
       "browser": "./dist/browser/index.js",
       "default": "./dist/browser/index.js"
+    },
+    "./e8": {
+      "node": "./dist/e8/index.js",
+      "browser": "./dist/browser/e8/index.js",
+      "default": "./dist/e8/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -48,7 +53,12 @@
     "sparql",
     "shacl",
     "rdf",
-    "typescript"
+    "typescript",
+    "e8",
+    "lattice",
+    "exceptional-lie-algebra",
+    "theta-series",
+    "modular-forms"
   ],
   "author": {
     "name": "Brian Thorne",
